@@ -1,32 +1,23 @@
-import { useEffect, useState } from 'react';
-import { fetchPricing } from '../api/requests';
+import { fetchPricingData } from '../api/requests';
 
-export default function Pricing() {
-  const [pricing, setPricing] = useState([]);
+export async function getStaticProps() {
+  const data = await fetchPricingData();
+  return { props: { pricing: data } };
+}
 
-  useEffect(() => {
-    async function loadPricing() {
-      const data = await fetchPricing();
-      setPricing(data);
-    }
-    loadPricing();
-  }, []);
-
+export default function Pricing({ pricing }) {
   return (
-    <div className="p-10">
-      <h1 className="text-4xl font-bold mb-4">Pricing</h1>
-      {pricing.length > 0 ? (
-        pricing.map((plan) => (
-          <div key={plan.id} className="border p-4 mb-4 rounded-lg">
-            <h2 className="text-2xl font-bold">{plan.name}</h2>
-            <p>{plan.price}</p>
+    <div>
+      <h1>Pricing Plans</h1>
+      <ul>
+        {pricing.map((plan) => (
+          <li key={plan.id}>
+            <h2>{plan.name}</h2>
+            <p>{plan.price} per month</p>
             <p>{plan.description}</p>
-          </div>
-        ))
-      ) : (
-        <p>Loading pricing details...</p>
-      )}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
-
